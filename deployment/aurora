@@ -1,0 +1,88 @@
+#!/bin/bash
+
+AURORA_NAME=aurora_yokogawa
+
+function usage() {
+  echo
+  echo "Usage: $0 OPTION"
+  echo "  OPTION:"
+  echo "    - init: start ${AURORA_NAME} container with attached configuration"
+  echo "    - start: start ${AURORA_NAME} container"
+  echo "    - stop:  stop ${AURORA_NAME} container"
+  echo "    - restart:  restart ${AURORA_NAME} container"
+  echo "    - logs:  watch the processing log"
+  echo
+
+  exit 1
+}
+
+function init() {
+  echo
+  echo "INITIALIZING ${AURORA_NAME}:"
+
+  mkdir -p "${CONFIG_FOLDER}"
+  mkdir -p "${LOG_FOLDER}"
+
+  mkdir -p "${INPUT_FOLDER}"
+  mkdir -p "${WORKING_FOLDER}"
+  mkdir -p "${OUTPUT_FOLDER}"
+
+  start_aurora
+
+  cp -fv ./config.yaml "${CONFIG_FOLDER}"
+}
+
+function start_aurora() {
+  echo
+  echo "STARTING ${AURORA_NAME} WITH THE FOLLOWING FOLDER MAPPING:"
+  echo "Config:     ${CONFIG_FOLDER}"
+  echo "Log:        ${LOG_FOLDER}"
+  echo "Staging:    ${INPUT_FOLDER}"
+  echo "Working:    ${WORKING_FOLDER}"
+  echo "Output:     ${OUTPUT_FOLDER}"
+  echo
+
+  docker run \
+    --name ${AURORA_NAME} \
+    --restart always \
+    -d \
+    -e TZ="${TZ}" \
+    -v "${CONFIG_FOLDER}:/app/data/config" \
+    -v "${LOG_FOLDER}:/app/data/log" \
+    -v "${INPUT_FOLDER}:/app/data/input" \
+    -v "${WORKING_FOLDER}:/app/data/working" \
+    -v "${OUTPUT_FOLDER}:/app/data/output" \
+    cinamonn/yokogawa
+
+  [ $? -eq 0 ] && (
+    echo
+    echo "${AURORA_NAME} IS NOW RUNNING IN THE BACKGROUND."
+    echo
+  )
+
+}
+
+function stop_aurora() {
+  echo
+  echo "Stoping ${AURORA_NAME} container."
+  echo
+
+  docker container rm -f ${AURORA_NAME}
+}
+
+function watch_log() {
+  echo "Watching log under ${LOG_FOLDER}"
+  tail -f "${LOG_FOLDER}/process.log"
+}
+
+# ENTRY POINT
+source ./env
+
+[ $# -ne 1 ] && usage
+[ "$1" = "init" ] && init && exit 0
+[ "$1" = "start" ] && start_aurora && exit 0
+[ "$1" = "stop" ] && stop_aurora && exit 0
+[ "$1" = "restart" ] && stop_aurora && start_aurora && exit 0
+[ "$1" = "logs" ] && watch_log && exit 0
+
+usage

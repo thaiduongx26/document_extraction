@@ -1,0 +1,9 @@
+CONFIG_FOLDER="${PWD}/data/config"
+LOG_FOLDER="${PWD}/data/log"
+
+INPUT_FOLDER="${PWD}/data/input"
+WORKING_FOLDER="${PWD}/data/working"
+OUTPUT_FOLDER="${PWD}/data/output"
+
+# Timezone configuration
+TZ=Asia/Bangkok

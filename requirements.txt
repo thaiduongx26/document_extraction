@@ -1,0 +1,11 @@
+xlsxwriter
+matplotlib==3.2.0
+numpy==1.18.2
+pandas==1.0.2
+scikit-learn==0.22.2.post1
+tinysegmenter3==0.1.0
+xlrd
+PyYAML
+pdfplumber==0.5.16
+pikepdf==1.6.4
+chardet

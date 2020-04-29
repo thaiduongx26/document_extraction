@@ -1,0 +1,62 @@
+logging:
+  version: 1
+
+  formatters:
+    standard:
+      format: '%(asctime)s %(name)-30s %(levelname)-8s %(message)s'
+
+    simple:
+      format: '[%(levelname)-7s] --- %(message)s'
+
+    charge:
+      format: '%(asctime)s,%(message)s'
+      datefmt: '%Y-%m-%d %H:%M:%S'
+
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: DEBUG
+      formatter: standard
+      stream: ext://sys.stdout
+
+    file_handler:
+      class: logging.handlers.TimedRotatingFileHandler
+      formatter: standard
+      level: DEBUG
+      filename: data/log/process.log
+      encoding: utf8
+      when: 'midnight'
+      backupCount: 60
+
+    charge_file_handler:
+      class: logging.handlers.TimedRotatingFileHandler
+      formatter: charge
+      level: DEBUG
+      filename: data/log/charge.log
+      encoding: utf8
+      when: 'midnight'
+
+  loggers:
+    ai:
+      level: DEBUG
+      handlers: [console, file_handler]
+      propagate: no
+
+    preprocess:
+      level: DEBUG
+      handlers: [console, file_handler]
+      propagate: no
+
+    charge_log:
+      level: INFO
+      handlers: [charge_file_handler]
+
+  root:
+    level: DEBUG
+    handlers: [console, file_handler]
+
+sensor:
+  schedule: 10 # seconds
+
+debugging:
+  enable: False # True or False
