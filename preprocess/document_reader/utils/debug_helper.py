@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 class DebugHelper:
     def __init__(self, root_dir='.'):
+        print("root_dir: ", root_dir)
         self.debug_dir = self.create_debug_dir(root_dir)
 
     def create_debug_dir(self, root_dir):

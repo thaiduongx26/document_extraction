@@ -18,6 +18,7 @@ class PDF:
         for index, page in enumerate(pdf.pages):
             tables = table_utils.extract_tables(page)
             paragraphs, forced_stop = paragraph_utils.extract_paragraphs(page, tables)
+            # print("paragraphs: ", [x.bbox for x in paragraphs])
             reflowed_page = page_utils.reflow(tables, paragraphs)
 
             reflowed_document.extend(reflowed_page)

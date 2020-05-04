@@ -119,6 +119,7 @@ def process_file(filename: str):
 
     # DEBUG: caching files --> move to tests
     outfile = path.join(path.dirname(filename), '.cache2', os.path.basename(filename))
+    print("outfile: ", outfile)
     if not path.exists(path.dirname(outfile)):
         os.mkdir(path.dirname(outfile))
 

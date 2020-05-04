@@ -18,18 +18,18 @@ import warnings
 warnings.warn = warn
 
 
-def test_entry_point():
-    try:
-        shutil.rmtree('data/working', ignore_errors=True)
-        shutil.rmtree('data/input/*', ignore_errors=True)
-        shutil.rmtree('data/output', ignore_errors=True)
-        shutil.copy('data/0001_no19-270.pdf', 'data/input/0001_no19-270.pdf')
-    except BaseException as e:
-        logging.exception(e)
-        pass
-
-    from entrypoint import main_loop
-    main_loop()
+# def test_entry_point():
+#     try:
+#         shutil.rmtree('data/working', ignore_errors=True)
+#         shutil.rmtree('data/input/*', ignore_errors=True)
+#         shutil.rmtree('E:\\document_dataset\\kepco_output', ignore_errors=True)
+#         shutil.copy('data/0001_no19-270.pdf', 'data/input/0001_no19-270.pdf')
+#     except BaseException as e:
+#         logging.exception(e)
+#         pass
+#
+#     from entrypoint import main_loop
+#     main_loop()
 
 
 def full_flow(input_file: str):
@@ -41,7 +41,8 @@ def full_flow(input_file: str):
 
 
 def se_flow():
-    process_folder('data/20200406受領_PoCデータ/all')
+    # process_folder('E:\\document_dataset\\kepco_data_pdf')
+    process_folder('E:\\document_dataset\\all')
     # process_file('data/original_pdf/0257_SN15-296.pdf')
 
     # from preprocess.utils.utils import launch

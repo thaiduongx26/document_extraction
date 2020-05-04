@@ -26,16 +26,17 @@ def load_settings(config_file='data/config/config.yaml') -> dict:
 
 settings = load_settings()
 
-enable_debug = False
 try:
     enable_debug = settings['debugging']['enable']
 except BaseException:
     pass
+enable_debug = False
+
 
 
 class Folder:
-    input = 'data/input'
-    working = 'data/working'
-    output = 'data/output'
-    log = 'data/log'
-    config = 'data/config'
+    input = 'E:\\document_reading/input'
+    working = 'E:\\document_reading/working'
+    output = 'E:\\document_reading/output'
+    log = 'E:\\document_reading/log'
+    config = 'E:\\document_reading/config'
