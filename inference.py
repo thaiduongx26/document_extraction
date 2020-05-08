@@ -1,8 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
-import re
+import re, glob
 from tqdm import tqdm
+import unicodedata
 
 
 def lcs_not_recognition(a, b):
@@ -67,14 +68,15 @@ def lcs_get_list(a, b):
 
 
 def text_process(text):
-    text = text.replace(' ', '')
+    text = str(text)
+    text = unicodedata.normalize('NFKC', text)
     text = re.sub('\s+', '', text)
     return text
 
 
 def read_excel(excel_path, extract_sent_ca=False):
     xl = pd.ExcelFile(excel_path)
-    df = xl.parse(sheet_name)
+    df = xl.parse("Sheet1")
     df.dropna(subset=["Text"], inplace=True)
     # get sentences_no_table
     df_no_table = df[df["Is Table"] != 'x']
@@ -104,8 +106,7 @@ def read_excel(excel_path, extract_sent_ca=False):
         df_no_table = df[df["Is Table"] != 'x']
         sentences_have_CA_no_table = df_no_table["Text"].values
         sentences_have_CA_no_table = [text_process(sentences_have_CA_no_table[j]) for j in
-                                      range(len(sentences_have_CA_no_table)) if
-                                      type(df_no_table["Tag"].values[j]) == str]
+                                      range(len(sentences_have_CA_no_table))]
     else:
         sentences_have_CA_no_table = []
     return sentences_no_table, number_table, title_sentences, sentences_have_CA_no_table, df
@@ -162,18 +163,37 @@ def analyst(excel_save_name, data_path, se_path):
     title_detection_acc = []
     paragraph_have_CA_not_recognized = []
     table_extract_not_completed = []
-    files = os.listdir(data_path)
-    files_se = os.listdir(se_path)
+    folder = os.listdir(data_path)
+
+    folder_se = os.listdir(se_path)
+    # print("folder: ", folder)
+    # print("folder_se: ", folder_se)
     files_final = []
-    for file_name in tqdm(files):
-        #         print(file_name)
-        if file_name not in files_se:
-            continue
-        files_final.append(file_name)
-        sentences_no_table_CA, number_table_CA, title_sentences_CA, sentences_have_CA_no_table_CA, df_CA = read_excel(
-            os.path.join(data_path, file_name), extract_sent_ca=True)
+    # for folder_name in tqdm(folder):
+    #     #         print(file_name)
+    #     if folder_name not in folder_se:
+    #         continue
+    #     files = glob.glob(data_path + '/' + folder_name + '/*.xlsx')
+    #     se_files = glob.glob(se_path + '/' + folder_name + '/*.xlsx')
+    #     se_file_names = [os.path.basename(file) for file in se_files]
+    files = glob.glob((data_path+'/*.xlsx'))
+    file_names = [os.path.basename(file) for file in files]
+    se_files = glob.glob(se_path + '/*.xlsx')
+    for file in se_files:
+        file_name = os.path.basename(file)
         sentences_no_table_SE, number_table_SE, title_sentences_SE, sentences_have_CA_no_table_SE, df_SE = read_excel(
             os.path.join(se_path, file_name))
+
+        file_name_wo_pdf = file_name.split('.')[0]+'.xlsx'
+        if file_name not in file_names and file_name_wo_pdf not in file_names:
+            continue
+        elif file_name_wo_pdf in file_names:
+            file_name = file_name_wo_pdf
+        files_final.append( file_name)
+        # print("file_name: ", file_name)
+        # print("os.path.join(data_path, folder_name, file_name): ", os.path.join(data_path, file_name))
+        sentences_no_table_CA, number_table_CA, title_sentences_CA, sentences_have_CA_no_table_CA, df_CA = read_excel(
+            os.path.join(data_path, file_name), extract_sent_ca=True)
         paragraph_acc.append(lcs(sentences_no_table_CA, sentences_no_table_SE) / len(sentences_no_table_CA))
         #         print(sentences_no_table_CA)
         #         print(lcs(sentences_no_table_CA, sentences_no_table_SE))
@@ -184,7 +204,8 @@ def analyst(excel_save_name, data_path, se_path):
         if number_table_SE > number_table_CA:
             number_table_acc = 1.0
         table_detection_acc.append(number_table_acc)
-        title_detection_acc.append(lcs(title_sentences_CA, title_sentences_SE) / len(title_sentences_CA))
+        title_detection_acc.append(lcs(title_sentences_CA, title_sentences_SE) / len(title_sentences_CA) if len(
+            title_sentences_CA) != 0 else 0)
         if len(sentences_have_CA_no_table_CA) == 0:
             paragraph_have_CA_not_recognized.append(-1)
         else:
@@ -205,7 +226,12 @@ def analyst(excel_save_name, data_path, se_path):
               'table_extract_not_completed': table_extract_not_completed})
     df_excel.to_excel(excel_save_name)
 
+
 if __name__ == '__main__':
     folder = "C:\\Users\\cinnamon\\Desktop\\excel_output"
-    analyst("report.xlsx", )
+    # data_path = "E:\\document_dataset\\kepco_dataset_excel_converted"
+    # se_path = "E:\\document_dataset\\kepco_document_reading_output"
+    data_path = "E:\\document_dataset\\all_data"
+    se_path = "E:\\document_dataset\\yoko_table_output"
+    analyst("report_table.xlsx", data_path, se_path)
     pass

@@ -51,7 +51,6 @@ class Exporter:
             logger.info('OUTPUT-XLSX:      ' + outfile)
 
         # TODO: implement an util to fit the data
-
         def col_counter(counter=100):
             for i in range(counter):
                 yield i
@@ -73,7 +72,6 @@ class Exporter:
         worksheet.set_column(next(ctr2), next(ctr1), width=12)  # Is Table
         if utils.enable_debug:
             worksheet.set_column(next(ctr2), next(ctr1), width=25)  # Parser
-
         ctr1 = col_counter()
         cell_header_format = workbook.add_format({'align': 'center',
                                                   'valign': 'vcenter',
@@ -93,13 +91,10 @@ class Exporter:
         worksheet.write_string(0, next(ctr1), 'Is Table', cell_header_format)
         if utils.enable_debug:
             worksheet.write_string(0, next(ctr1), 'Parser', cell_header_format)
-
         row_index = 0
         colors = dict()
-
         default_fmt = workbook.add_format()
         title_fmt = workbook.add_format({'bg_color': 'yellow'})
-
         for row in self.flatten_tree():
             row_index += 1
             ctr1 = col_counter()
@@ -109,45 +104,26 @@ class Exporter:
                 cell_format = title_fmt
                 row_index_format = workbook.add_format({'bg_color': generate_random_bright_color()})
                 colors[row['index']] = row_index_format
-
             worksheet.write_number(row_index, next(ctr1), row['page_number'], cell_format)
             if utils.enable_debug:
                 worksheet.write_string(row_index, next(ctr1), row['bullet'], cell_format)
                 worksheet.write_string(row_index, next(ctr1), row['numbering'], cell_format)
-            
-            text = row['text']
-            idx = [i for i in range(len(text)) if text[i] == ':']
-            key = text.split(':')
-            if len(idx) == 1:
-                text_key = key[0]
-                text_key_tokenize = text_key.split(' ')
-                sum_key_len = 0
-                for token in text_key_tokenize:
-                    sum_key_len += len(token)
-                if len(text_key_tokenize) < 10:
-                    text = key[0] + ':        ' + key[1]
-            # print(row['text'])
-            # worksheet.write_string(row_index, next(ctr1), row['text'], cell_format)
-            # 1 / 0
+            worksheet.write_string(row_index, next(ctr1), row['text'], cell_format)
             # worksheet.write_string(row_index, next(ctr1),
             #                        row['title'] if row['title'] is not None else '', cell_format)
-
-            # worksheet.write_number(row_index, next(ctr1), row['index'], row_index_format)
-            worksheet.write_string(row_index, next(ctr1), text, cell_format)
-
+            worksheet.write_number(row_index, next(ctr1), row['index'], row_index_format)
             if row['parent_index'] is not None:
                 worksheet.write_number(row_index, next(ctr1), row['parent_index'],
                                        colors[row['parent_index']])
             else:
                 worksheet.write_string(row_index, next(ctr1), '')
-
             worksheet.write_string(row_index, next(ctr1), 'x' if row['is_title'] else '', cell_format)
             worksheet.write_string(row_index, next(ctr1), 'x' if row['is_table'] else '', cell_format)
             if utils.enable_debug:
                 worksheet.write_string(row_index, next(ctr1), row['parser'], cell_format)
-
         workbook.close()
         return outfile
+
 
     def to_json(self, outfile: str):
         """Export SE output tree to json.

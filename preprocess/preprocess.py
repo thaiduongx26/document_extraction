@@ -110,7 +110,7 @@ def line_postprocess(lines: List[Line]):
 custom_handler.line_postprocess = line_postprocess
 
 
-def process_file(filename: str):
+def process_file(filename: str, output_folder=None):
     if Path(filename).suffix.lower() in ('.doc', '.docx'):
         filename = convert_docx_to_html(filename)
 
@@ -118,8 +118,10 @@ def process_file(filename: str):
     root = _build_document_tree(document)
 
     # DEBUG: caching files --> move to tests
-    outfile = path.join(path.dirname(filename), '.cache2', os.path.basename(filename))
-    print("outfile: ", outfile)
+    if not output_folder:
+        outfile = path.join(path.dirname(filename), '.cache2', os.path.basename(filename))
+    else:
+        outfile = path.join(output_folder, os.path.basename(filename))
     if not path.exists(path.dirname(outfile)):
         os.mkdir(path.dirname(outfile))
 
@@ -134,14 +136,21 @@ def process_file(filename: str):
     return _convert_tree_to_list(root), excel_output
 
 
-def process_folder(dirname: str, filter=('.pdf', '.docx', '.doc')):
+def process_folder(dirname: str, filter=('.pdf',), output_folder=None):
     import glob
 
-    for file in glob.glob(str(dirname) + '/**/*.*', recursive=True):
+    # for file in glob.glob(str(dirname) + '/**/*.*', recursive=True):
+    for file in glob.glob(str(dirname) + '/*.*', recursive=True):
+        folder = os.path.basename(os.path.dirname(file))
         for ext in filter:
             if file.lower().endswith(ext):
-                process_file(file)
-                logger.info('DONE\n')
+                try:
+                    process_file(file, output_folder=output_folder + '/' + folder)
+                    print("DONE!")
+                    logger.info('DONE\n')
+                except Exception as e:
+                    print("Error: ", e)
+                    continue
 
 
 def _build_document_tree(document):

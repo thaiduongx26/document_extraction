@@ -35,3 +35,4 @@ class DebugHelper:
         im.save(path)
 
         return path
+

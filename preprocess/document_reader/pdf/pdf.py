@@ -25,7 +25,11 @@ class PDF:
 
             # Draw debug output
             if utils.enable_debug:
-                debug_helper.generate_debug_image(page, paragraphs, f'{self.filename}-page-{index}.png')
+                import os
+                file_name = os.path.basename(self.filename)
+                folder = os.path.basename(os.path.dirname(self.filename))
+                out_folder = "E:\\document_dataset\\pdf_files\\debug/"
+                debug_helper.generate_debug_image(page, paragraphs, f'{out_folder+folder+"/"+file_name}-page-{index}.png')
 
             # image = debug_helper.generate_debug_image(page, page.extract_words(), f'{filename}-page-words-{index}.png')
             if forced_stop:

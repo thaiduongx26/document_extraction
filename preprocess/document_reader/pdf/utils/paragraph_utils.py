@@ -106,7 +106,7 @@ def construct_paragraphs(lines: List[Line], **kwargs):
 
 
 def extract_paragraphs(page: Page, tables: List[Table]):
-    words = extract_words(page)
+    words = extract_words(page, y_tolerance=4)
     words = remove_words_within_table(words, tables)
 
     lines, forced_stop = construct_lines(words, page)

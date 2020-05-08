@@ -9,6 +9,8 @@ class RightAlignmentParser:
     @staticmethod
     def run(current_node: Node, new_node: Node):
         node = current_node
+        # print(" new_node.paragraph.is_table(): ", new_node.paragraph.is_table())
+        # print("new_node.paragraph.layout['alignment']: ", new_node.paragraph.layout)
         if not new_node.paragraph.is_table() and new_node.paragraph.layout['alignment'] == ALIGNMENT.RIGHT:
             if not node.paragraph.is_table() and node.paragraph.layout['alignment'] == ALIGNMENT.RIGHT:
                 node = current_node.parent

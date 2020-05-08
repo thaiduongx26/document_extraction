@@ -42,7 +42,9 @@ def full_flow(input_file: str):
 
 def se_flow():
     # process_folder('E:\\document_dataset\\kepco_data_pdf')
-    process_folder('E:\\document_dataset\\all')
+    process_folder('E:\\document_dataset\\pdf_files\\working', output_folder = 'E:\\document_dataset\\pdf_files\\debug')
+    # process_folder('E:\\document_dataset\\pdf_files', output_folder = 'E:\\document_dataset\\yoko_table_output')
+
     # process_file('data/original_pdf/0257_SN15-296.pdf')
 
     # from preprocess.utils.utils import launch

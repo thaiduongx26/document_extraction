@@ -30,7 +30,7 @@ try:
     enable_debug = settings['debugging']['enable']
 except BaseException:
     pass
-enable_debug = False
+enable_debug = True
 
 
 
